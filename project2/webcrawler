@@ -1,0 +1,84 @@
+#!/usr/bin/python
+
+import sys
+import socket
+import re
+import fnmatch
+
+csrftoken = []
+sessionId = []
+credentials = sys.argv
+s = socket.socket(socket.AF_INET , socket.SOCK_STREAM)
+homepageURL = "http://cs5700sp15.ccs.neu.edu/accounts/login/?next=/fakebook/"
+loginPage = "http://cs5700sp15.ccs.neu.edu/accounts/login/?next=/fakebook/" 
+path = "/accounts/login/"
+secretFlag = set()
+urlCollections = []
+username  = credentials[1]
+password  = credentials[2]
+urlvalue = []
+urlset = set()
+htmlStart = "<html>"
+htmlEnd  = "</html>"
+requestUrl = "GET " + homepageURL + " HTTP/1.1\nHost: cs5700sp15.ccs.neu.edu\n\n"
+#requestUrl = "GET /fakebook/ HTTP/1.1\r\nHost: http://www.cs5700sp15.ccs.neu.edu\r\n\r\n"
+s.connect(("cs5700sp15.ccs.neu.edu",80))
+s.send(requestUrl)
+htmlResponse = s.recv(4096)
+#print htmlResponse
+if (re.match("HTTP/1.1 200 OK",htmlResponse)):
+   # print htmlResponse
+    arrayMessage = htmlResponse.split()
+    csrftokenMessage = str(fnmatch.filter(arrayMessage, 'csrftoken=*'))
+    print csrftokenMessage
+    csrftoken = csrftokenMessage.replace('csrftoken=','') 
+    csrftoken = csrftoken.replace(';','')
+    print csrftoken
+    sessionMessage = str(fnmatch.filter(arrayMessage, 'sessionid=*'))
+    sessionId = sessionMessage.replace('sessionid=','')
+    sessionId = sessionId.replace(';','')
+    print sessionId
+#    postMessage = "POST " + path + " HTTP:/1.1\r\nHost: cs5700sp15.ccs.neu.edu\r\nConnection: keep-alive\r\n" + "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n" + "Content-Length: 109\r\n" + "Content-Type: application/x-www-form-urlencoded\r\n Origin: http://cs5700sp15.ccs.neu.edu\r\nCookie: csrftoken=" + csrftoken[2:-2] + "; sessionid=" + sessionId[2:-2] + "&csrfmiddlewaretoken=" + csrftoken[2:-2] + "&username=" + username + "&password=" + password + "&next=/fakebook/\r\n\r\n"
+#    postMessage = "POST " + path + " HTTP/1.1\r\n" + "Host: cs5700sp15.ccs.neu.edu\r\nConnection: keep-alive\r\n" + "Content-Length: 109\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9\r\nOrigin: http://cs5700sp15.ccs.neu.edu\r\nContent-Type: application/x-www-form-urlencoded\r\n" + " Set-Cookie: csrftoken=""" +csrftoken + "; sessionid=" + sessionId + "\r\nusername=" + username + "&password=" + password + "&csrfmiddlewaretoken=" + csrftoken + "&next=/fakebook/\r\n"
+ 
+    postMessage = "POST" + path + "HTTP/1.1\r\nHost: cs5700sp15.ccs.neu.edu\r\nCookie: csrftoken=" + csrftoken[2:-2] + ";sessionid=" + sessionId[2:-2] + "Content-Length: 109\r\n" + "Content-Type:  application/x-www-form-urlencoded\r\n"+"username =" + username + "&password=" + password + "&csrfmiddlewaretoken=" + csrftoken[2:-2] + "&next=/fakebook/\r\n\r\n"
+    print postMessage
+    s.send(postMessage)                                                        
+    postReply = s.recv(4096)
+    print postReply
+    postreply = postReply.split()
+    print "Reply: " + str(postreply)
+  #  print checkString
+   # secretvalue  = re.search('class=',checkString)
+    value = str(fnmatch.filter(postreply, '<h2 class='))
+   # print value
+    secretFlag.add(value)
+#    urlvalue = re.search('<h2>List of available sites:</h2>',checkString)
+ #   if(urlvalue):
+    urlCollections = fnmatch.filter(postreply,'href="/*')
+#    leng = urlCollections.()
+    count = 0
+    for i in urlCollections:
+          print i
+          urlval =  i.replace('href="','')
+          urlnew = urlval.replace('">',' ')
+          urlnew = urlnew.split(' ',1)
+          urlset = urlnew[0]
+          count = count + 1
+    i = 0
+    while(i<count):
+          requestQuery = "GET " + urlset + """ HTTP/1.1\nHost: cs5700sp15.ccs.neu.edu\nConnection: keep-alive\nReferer: http://cs5700f14.ccs.neu.edu/accounts/login/?next=/fakebook/\nCookie: csrftoken=""" + csrftoken[2:-2] +"; sessionid=" +sessionId[2:-2] +"\r\n\r\n"
+          print requestQuery
+          s.send(requestQuery)                                                         
+          responseMsg = s.recv(4096)
+          print responseMsg
+          postMessage = "POST" + urlset + "HTTP/1.1\r\nHost: cs5700sp15.ccs.neu.edu\r\nCookie: csrftoken=" + csrftoken[2:-2] + ";sessionid=" + sessionId[2:-2] + "Content-Length: 109\r\n" + "Content-Type:  application/x-www-form-urlencoded\r\n"+"username =" + username + "&password=" + password + "&csrfmiddlewaretoken=" + csrftoken[2:-2] + "&next=/fakebook/\r\n\r\n"
+          print postMessage
+          s.send(postMessage)
+          responsePost = s.recv(4096)
+          print responsePost
+          i = i + 1
+#print urlCollections
+#print urlset
+#print secretFlag
+s.close()

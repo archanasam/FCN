@@ -1,0 +1,207 @@
+#!/usr/bin/python
+
+#Program-author: Archana Sampath
+
+#The main aim of this program is to create a simple client and server socket connection
+#Where the client sendds a socket creation request ot the server and after the connection is estabilished
+#The server sends a HELLO message to the server with the credentials and the server after authenticating the credentials
+#sends a STATUS message to the client and along with that it sends a mathematical calculation to the client.
+#The client after parsing the maathematical calculation sends the solution to the server and the server after authenticating the
+#solution may or may not send more STATUS messages. After the client successfully computes all the expressions
+#the server sends a BYE message to the client along with the secret flag and thus the connection should close
+
+
+#The libraries that need to be imported
+import sys
+import ssl
+import socket
+
+port = 27993
+optioncount = 0
+
+try:
+#The socket connection for a simple TCP connection
+   socketB =  socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#The socket connection for an SSL connection
+   sslSocket = ssl.wrap_socket(socketB,server_side=False)
+
+#The arguments that the user gives from the command line are parsed my the sys-srgv command
+   argument  = sys.argv
+
+#Counterd for the loop
+   i = 0
+   j = 0
+
+#The input that the user gives on the command line can be either of the following permutation
+#./client -p 27994 -s cs5700sp15.ccs.neu.edu 001724972
+#./client -p 27993 cs5700sp15.ccs.neu.edu 001724972
+#./client -s cs5700sp15.ccs.neu.edu 001724972
+#./client cs5700sp15.ccs.neu.edu 001724972
+#For easch of the permutation I am parsing the arguments from the command line and checking 
+#if the particular flag is set or not
+
+#When the command contains both -p and -s flag then the SSL connection is estabilished
+   while i <  len(argument):
+        checkEnd = False
+        loopcount = 0
+        if (argument[i] == "-p" and argument[i+2] == "-s") or (argument[i] == "-p" and argument[i-1] == "-s"):
+           sslSocket.connect((argument[len(argument) - 2],int(argument[i+1])))
+           sslSocket.write("cs5700spring2015 HELLO "+argument[len(argument) - 1]+"\n")
+           cmdstatus = sslSocket.read(256)
+           reply = cmdstatus.split()
+#After the status message is received from the client I parse the arguments into different 
+#variables and then compare the operator. If ita a plus then add the number, if its a - then subtract the numbers and so on for 
+# * and /
+           while 1:
+                variable1 = int(reply[2])
+                variable2 = int(reply[4])
+                operator = reply[3]
+                if operator == '+':
+                     result = variable1 + variable2
+                elif operator == '-':
+                     result = variable1 - variable2
+                elif operator == '*':
+                     result = variable1 * variable2
+                elif operator == '/':
+                     result = variable1 / variable2
+                else:
+                     break
+                resultvar = str(result)
+#The resut is then sent by the client to the server and after validating the solution for each and
+#every computation the server send the BYE message with the secret flag for SSL
+
+                sslSocket.write("cs5700spring2015 "+resultvar+"\n")
+                cmdstatus = sslSocket.read(256)
+                reply = cmdstatus.split()
+                if reply[1] == "STATUS":
+                     j = j+1
+                elif reply[2] == "BYE":
+                     print reply[1]
+#Both the TCP and the SSL sockets are closed
+                     socketB.close()
+                     sslSocket.close()
+                     checkEnd = True
+                     break
+           if checkEnd == True:
+                break
+#if the command line consists of only -s then the connection is estabilished on the 27994 port number
+        elif argument[i] == "-s" and argument[i+1] != "-p":
+             sslSocket.connect((argument[len(argument) - 2],27994))
+             sslSocket.send("cs5700spring2015 HELLO "+argument[len(argument) - 1]+"\n")
+             cmdstatus = sslSocket.read(256)
+             reply = cmdstatus.split()
+            # print reply
+#Again the arguments are parsed and the operators are compared and the respective computations are done
+             while 1:
+                  variable1 = int(reply[2])
+                  variable2 = int(reply[4])
+                  operator = reply[3]
+                  if operator == '+':
+                      result = variable1 + variable2
+                  elif operator == '-':
+                      result = variable1 - variable2
+                  elif operator == '*':
+                      result = variable1 * variable2
+                  elif operator == '/':
+                      result = variable1 / variable2
+                  else:
+                      break
+                  resultvar = str(result)
+#The solution is then sent to the server who after validating the solution and sending mutiple calculations
+#will give the secret flag.
+                  sslSocket.send("cs5700spring2015 "+resultvar+"\n")
+                  cmdstatus = sslSocket.read(256)
+                  reply = cmdstatus.split()
+                  if reply[1] == "STATUS":
+                      loopcount = loopcount + 1
+                  elif reply[2] == "BYE":
+                      print reply[1]
+#The socket is now closed
+                      sslSocket.close()
+                      checkEnd = True
+                      break
+             if checkEnd == True:
+                  break
+
+#If the command line consists of only -p then the client connects to the 27993 port
+#The port number is different.
+        elif argument[i] == "-p":
+             socketB.connect((argument[len(argument) - 2],int(argument[i+1])))
+             socketB.send("cs5700spring2015 HELLO "+argument[len(argument) - 1]+"\n")
+             cmdstatus = socketB.recv(256)
+             reply = cmdstatus.split()
+#After the STATUS message is received by the client the arguments are parsed and
+#the operator is checked and the operations are performed accordingly
+             while 1:
+                  variable1 = int(reply[2])
+                  variable2 = int(reply[4])
+                  operator = reply[3]
+                  if operator == '+':
+                      result = variable1 + variable2
+                  elif operator == '-':
+                      result = variable1 - variable2
+                  elif operator == '*':
+                      result = variable1 * variable2
+                  elif operator == '/':
+                      result = variable1 / variable2
+                  else:
+                      break
+                  resultvar = str(result)
+#After the computation is done the solution is sent to the server and the server after validating
+#the output for every calculation it sends the server gives the secret key along with the BYE message.
+                  socketB.send("cs5700spring2015 "+resultvar+"\n")
+                  cmdstatus = socketB.recv(256)
+                  reply = cmdstatus.split()
+                  if reply[1] == "STATUS":
+                     loopcount = loopcount + 1
+                  elif reply[2] == "BYE":
+                      print reply[1]
+#The socket connection is then closed
+                      socketB.close()
+                      checkEnd = True
+                      break
+             if checkEnd == True:
+                break
+        else:
+             optioncount = optioncount + 1
+             if optioncount == len(argument) and optioncount == 3:
+                 socketB.connect((argument[len(argument) - 2],port))
+                 socketB.send("cs5700spring2015 HELLO "+argument[len(argument) - 1]+"\n")
+                 cmdstatus = socketB.recv(256)
+                 reply = cmdstatus.split()
+#After the STATUS message is received by the client the arguments are parsed and
+#the operator is checked and the operations are performed accordingly
+                 while 1:
+                      variable1 = int(reply[2])
+                      variable2 = int(reply[4])
+                      operator = reply[3]
+                      if operator == '+':
+                          result = variable1 + variable2
+                      elif operator == '-':
+                          result = variable1 - variable2
+                      elif operator == '*':
+                          result = variable1 * variable2
+                      elif operator == '/':
+                          result = variable1 / variable2
+                      else:
+                          break
+                      resultvar = str(result)
+#After the computation is done the solution is sent to the server and the server after validating
+#the output for every calculation it sends the server gives the secret key along with the BYE message.
+                      socketB.send("cs5700spring2015 "+resultvar+"\n")
+                      cmdstatus = socketB.recv(256)
+                      reply = cmdstatus.split()
+                      if reply[1] == "STATUS":
+                         loopcount = loopcount + 1
+                      elif reply[2] == "BYE":
+                          print reply[1]
+#The socket connection is then closed
+                          socketB.close()
+                          checkEnd = True
+                          break
+                 if checkEnd == True:
+                    break   
+#After the cases are looked after the pointer value is incremented by one for every iteration.
+        i = i + 1
+except Exception:
+     print "Command line argument Error"

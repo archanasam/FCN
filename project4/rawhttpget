@@ -1,0 +1,3 @@
+#!/bin/sh
+echo $1
+/usr/bin/python rawhttpget.py $1 

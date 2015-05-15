@@ -1,0 +1,49 @@
+The main motive of this program was create a simple client and server socket
+The client would send the connect request to the server and the server on accepting it recieves 
+a HELLO message from the client. The HELLO message containg the HELLO string and the NEU_ID of the student.
+The server after validating that ID sends a STATUS message to the client and the client then computs the mathematical
+ question given by the server and sends the solution to the server. The server after validating each si=oltion for the multiple
+calculations send the BYE message which contains the secret_key. After the secret key is acquired the connection is terminated.
+
+I have used PYTHON programming language to design this program. 
+
+-Since the program parameters needed to be taken from the command the user gives in the command line I parsed the arguments
+from the command line and used it for my further programming.
+
+-The next step was that i needed to do was to estabilish the connection between the client and the server
+through a socket. The port number for the connection was parsed from the command line and so was the host name.
+
+-After that I need to write condition for all the permutations of inputs that could be given by the user. They are as follows.
+--./client -p 27994 -s cs5700sp15.ccs.neu.edu 001724972
+--./client -p 27993 cs5700sp15.ccs.neu.edu 001724972
+--./client -s cs5700sp15.ccs.neu.edu 001724972
+--./client cs5700sp15.ccs.neu.edu 001724972
+
+So for the First condition where both the -p and the -s flag is set as true, I connect to the server socket usong
+the port 27994 and then use the SSL socket connection syntax to connect to the SSL socket. After the connection is estabilished 
+a hellow message is sent by the client and after authenticating it the server sends the status message along with a mathematical calcualtion. This 
+calculation is handled by the client where it parses the STATUS message and compares the operator's value i-e if its a + the  add the numbers and so
+on for - * and /. After the computation is done I send the solution message to the server which after various more STATUS messages gives the 
+BYE message and the secret_key
+
+For the second condition where the -p flag is set, I use a normal TCP socket connection to the port 27993. After the connection is made the procedure is 
+similiar where the STATUS message os parsed and the operators are comapred and the computation is done after which the STATUS message keeps on
+recurring. After authentication the server sends the BYE message along with the secret flag which is different from the previous time
+
+The third condition also has the similar procedure except that the port number is 27994 and the connection is an SSL connection
+
+The forth condition where we have no flags the port number is set default as 27993 and the same procedure continues.
+
+After every condition is satisfied the connections are closed.
+
+This was the basic overview of the program
+
+CHALLENGES:
+
+The main challenges I faced was while implementing the SSL connection. The parsing of the different conditions and the placement of the Socket.close()
+was a little tricky.
+
+TESTING:
+
+The testing that was done by me was a simple Unit testing method where I tested each and every function before moving on to the next function.
+

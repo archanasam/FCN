@@ -1,0 +1,37 @@
+
+HIGH-LEVEL APPROACH
+
+The main aim of this program is the understanding of the HTTP protocols.I have used python programming language for 
+this project .
+ What I have done in this program is create a socket that connects to the CCIS server. Then I formulate a GET meggase using the 
+attributes that i gathered by using the Wireshark paket analyzer. The GET message is sent to the 
+host i.e the ccis server with the credentials for logging into fakebook i.e the username and password
+I then receive the message from the server and after receiving the message, I sent a POST message to the 
+loginpath with the username, password, the extracted sessionId ( which is unique ), the CSRF token (which is unique)
+the content-length and the other parameters after analyzing them on the Wireshark packet analyzer. After the 
+server validates the POST message I get a list of all the sites that I can traverse. After parsing the 
+sites from the list I create a loop for the continous parsing and traversing of these links. Meanwhile while the traversing is happening 
+I serach for the secret-flag which has the format
+
+ <h2 class='secret_flag' style="color:red">FLAG: 64-characters-of-random-alphanumerics</h2>
+
+Then after obtaining this I parse the line for a secret-flag which I then place in a set. In order to
+obtain a non-redundant list of all the sites that I have traversed I use set. Using the Set has the major advantage that
+the set can never contain duplicate values. All the values that are obtained are single values. Thus i have the set of traversed sites as well 
+as the list of secret flags.
+
+CHALLENGES:
+
+One of the major challenges that I faced was the formulation of the POST message. The issue I was facing is the parsingof the
+values that need to be sent as parameters. The use of Wireshark packet analyzer solved this issue as I could get each attribute value exactly.
+
+Another major issue that I was facing was the parsing of the list of links that needed to be traversed. 
+
+TESTING:
+
+I used unit testing mehod to test the code. Also I used the ccs fakebook links to do my testing.
+
+
+
+
+

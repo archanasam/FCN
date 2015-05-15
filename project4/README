@@ -1,0 +1,45 @@
+PROJECT 4: CREATING A RAW TCP SOCKET
+------------------------------------
+
+AIM:
+----
+
+The aim of this project was to create a raw socket and extracting the data from the website given in the problem description.
+We had to download a webpage from the site and store it in our current directory.
+
+HIGH-LEVEL APPROACH:
+--------------------
+
+This approach that was utilized by me are elaborately explained as below:
+
+After setting the IPTABLE rules according to the command given in the problem description
+
+1. First I created two sockets. One for the SOCK_RAW/IPPROTO_RAW and the other is the SOCK_RAW/IPPROTO_IP. The first is to send the data and the other is to
+receive the data.
+2. After the creation of the hearders I send start with the three way handshake for the authentication 
+3. First I send the SYN request to the server.
+4. After the authentication of the headers sent in the SYN packet is done I will receive the SYN-ACK packet sfrom the server.
+5. From that that packet I extract the Sequence number and the acknowledgement number.
+6. After incrementing and setting the acknowledgement flag, I send the ACK packet with the GET request to the server.
+7. Once the authentication of the packet and its values is done by the server, it gives me access to the file that I have requested for downloading.
+8. And the page/file gets downloaded in the current directory.
+
+Thus this was the high level approach that I used in order to complete the project.
+
+ISSUES FACED:
+-------------
+
+1. One of the issues that I faced was the creation of the packets. It was difficukt to trace and create the packets since there were many inticate details
+that if missed could cause the entire program to fail
+2. The second issue that I faced was the erroneous calculation of the checksum.
+3. A lot of general debugging neede to be done and small issues caused a lot of problems in the working of the program.
+
+Thus these were the issues and the approach that I under took inorder to complete this project.
+
+RUN INSTRUCTIONS:
+----------------
+Give the following command to run the program
+
+./rawhttpget <URL>
+
+

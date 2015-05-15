@@ -1,0 +1,198 @@
+OBJECTIVES AND METHOLOGIES:
+-----------------------------
+
+This project mainly aims at giving the performance analysis of the different variants of TCP
+
+The different TCP variants that we would be dealing with are
+- TAHOE
+- RENO
+- NEWRENO
+- VEGAS
+
+The entire simulation is done using the NS-2 network simulator 
+The simulator enables us to simulate the entire network, which includes 6 nodes and all connected 
+in a particular order as mentioned in the problem statement.
+
+The simulator script is a .tcl script where we can encorporate the cbr flows and the tcp links with the sinks
+
+For the different variants I will simulate the network with its traffic flow
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+EXPERIMENT-1:
+------------
+
+The main objective of experiment 1 is to find out and compare the performace of the TCP variants under congestion
+
+In order to do that I will first use the NS-2 simulator and create the topology.
+
+Where:
+-The CBR flow is from N2 to sink at N3
+-The TCP flow is from N1 to sink at N4
+
+Note:
+
+The link between N2 and N3 addds as a bottle neck where both the TCP and CBR packets flow
+
+Methodology:
+
+The changes that need to be made inorder to get the performance variation is the changin of the 
+bandwidth that is in the CBR link namely N2-N3. I start with the bandwidth 1 and go uptill 10
+Recording the values at each of these variations.
+After the .tcl script is run we can see a .tr file. That file contains all the packet details. Such as the sent time, the 
+recieve time, source, destination etc.
+
+Obtaining the values:
+-Throughput is nothing but the rate at which a packet is successfully transmitted through the link. So for every TCP packet that has corresponding enqueue
+and recieved flag in its packet we can calculate the throughput by dividing the sum of all these packets with the total time taken for their transmission.
+-Latency is nothing but the time taken by a packet to go from the source to the destination. This can be calculated by filtering the times of those packets 
+that have the received flag set in them and that also have the corresoinding sent flag set in them. The average for these values is then calculated.
+-DropRate is nothing but the rate at which the packets are being dropped in the network. The drop packets can be calculated using the packets that have 
+an enqueue flag from a particular source and destination and then another entry in the .tr file with the drop flag set as true for the same source and destination. 
+
+I will write a script in python that will parse these values and then does the calculation for 
+throughput, droprate and latency. After obtaining these values I will use MS-EXCEL to plot the values on the graph and compare the results
+
+Expected-Behavior:
+-Tahoe- The TCP tahoe should exhibit low throughput, high latency and droprate. Since the wait time for the ack messages is more.
+-Reno- The TCP Reno should exhibit a better throughput and lower latency and droprate since it has the "fast retransmit" feature.
+-NewReno- The Tcp NewReno should exhibit futher bettet throughput and lower latency and droprate since its recovery time is faster.
+-Vegas- The TCP Vegas should exhibit the best throughput and the lowest latency and droprate since its congestion dectection and avoidance works faster.
+
+Variations in input environment:
+
+I am considering implementing the following changes in the environment to test whether the TCP variants are behaving in the same way as they were
+when the environment was controlled or whether there are any changes in their behaviour.
+
+I am planning to change the following parameters and check how these changes affect the behaviour of the TCP variants:
+
+Time:
+
+In the NS-2 script there is a piece of code that we can write that tells us the start time and the end time of the CBR and the TCP packets flow.
+I am planning to play around with the timings and see how this change is going to affect the behaviour of the different variants.
+The CBR flow can be started first and then after a few seconds the TCP flow can start.
+
+Tahoe:
+According to me the implications that are gonna be seen are that since the CBR flow starts first the bandwidth will get occupied by the CBR packets and later
+when the TCP flow is started the throughput will start low and as the bandwidth increases more packets are dropped since the tahoe waits for the ack of each and 
+every packet that is sent and if the ack reply exceeds the time limit the packet is dropped. The latency according to me will increase since the tahoe's slow start 
+phase is entered more quickly since the packet drops have led to the size of the congestion window to decrease. Drop rate will see an increase since more packets
+will be dropped as tahoe is waiting for the ack reply.
+
+Reno:
+According to me the implications that are gonna be seen are that the bandwidth will get occupied by the CBR packets and that since the TCP packet flow starts late it will cause in the throughput to start at a lower value but as compared to tahoe it will give a better starting throughput. The throughput will then steadily decrease since in Reno the issue of waiting for the ack packets is not entirely solved. But the new concept of "Fast Retransmit" effectively reduces the wait time of the tcp for the ack messages. The throughput will be better that tahoe's. The latency will also be better than that of tahoe's since the wait time is lesser. The droprate will be lesser that tahoe's as well.
+
+NewReno:
+According to me the implications that are gonna be seen are that the bandwidth will get occupied by the CBR packets and that since the TCP packet flow starts late it will cause the throughput to start at a lower value but as compared to the above two variants it will give a better starting throughput. NewReno is better than Reno since the detection of multiple packet losses is faster and the recovery from it is also faster. Hence the latency and droprate is also better that Reno's   
+
+Vegas:
+According to me Vegas should perform the best because it overcomes all the issues that NewReno faces regarding the detection of congestion beforehand. Vegas also has a better congestion avoidance algorithm as compared to the other variants.
+
+Bandwidth of the Links:
+
+On increasing or decreasing the bandwidth of the links we can surely see some changes in the behavior of the variants.
+
+Packetsize of the CBR packets:
+
+On increasing the packetsize of the CBR packets we can assume that the congestion will be affected once the TCP packets also start flowing.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+EXPERIMENT 2:
+------------
+
+The objective of the second experiment is to determine the faireness between the TCP variants when the link is shared by two different variants.
+
+In order to do that I will first use the NS-2 simulator and create the topology.
+
+Where:
+-The CBR flow is from N2 to sink at N3
+-The TCP flow for variant1 is from N1 to sink at N4
+-The TCP flow for variant2 is from N5 to sink at N6
+
+Note:
+
+The link between N2 and N3 addds as a bottle neck where both the TCP and CBR packets flow
+
+Methodology:
+
+The changes that need to be made inorder to get the performance variation is the changing of the
+bandwidth that is in the CBR link namely N2-N3. I start with the bandwidth 1 and go uptill 10
+Recording the values at each of these variations.
+After the .tcl script is run we can see a .tr file. That file contains all the packet details. Such as the sent time, the
+recieve time, source, destination etc.
+
+Obtaining the values:
+-Throughput is nothing but the rate at which a packet is successfully transmitted through the link. So for every TCP packet that has corresponding enqueue
+and recieved flag in its packet we can calculate the throughput by dividing the sum of all these packets with the total time taken for their transmission.
+-Latency is nothing but the time taken by a packet to go from the source to the destination. This can be calculated by filtering the times of those packets
+that have the received flag set in them and that also have the corresoinding sent flag set in them. The average for these values is then calculated.
+-DropRate is nothing but the rate at which the packets are being dropped in the network. The drop packets can be calculated using the packets that have
+an enqueue flag from a particular source and destination and then another entry in the .tr file with the drop flag set as true for the same source and destination.
+
+I will write a script in python that will parse these values and then does the calculation for
+throughput, droprate and latency. After obtaining these values I will use MS-EXCEL to plot the values on the graph and compare the results
+
+Expected Behaviour:
+
+- Reno/Reno- According to me the fairness between the two variants in case of throughput should be almost similar since both the variants exhibit the same kind of behavior incase of drop recovery and fast remit. The latency also remains the same.
+- NewReno/Reno- According to me the faireness between the two variants in case of throughput will differ as in NewReno will exhibit better throughput since the recovery from any packet drop is much faster in case of NewReno. The latency for Reno should be greater than that of NewReno since it takes more time for congestion detection and the wait time for the ack message is more.
+- Vegas/Vegas- According to me the fairness between the two variants in case of throughput, latency and droprate is fairly the same.
+- NewReno/Vegas- According to me the the fairness between the two variants in case of throughput should show some amouth of unfairness since the Vegas performs poorly for higher bandwidths the reason being that Vegas changes its transmission rate when it experiences any packet drops but NewReno doesnt have any such implementations. Latency according to me should be higher for NewReno since the wait time for the congestion detectio is more and hence more packets are dropped.
+
+Variations in inout environment:
+
+I am considering implementing the following changes in the environment to test whether the TCP variants are behaving in the same way as they were
+when the environment was controlled or whether there are any changes in their behaviour.
+
+I am planning to change the following parameters and check how these changes affect the behaviour of the TCP variants:
+
+Time:
+
+I can vary the time of either one of the variants and see how the fairness is affected
+
+According to me these are the changes that are likely going to take place
+
+-Reno/Reno -If I alter the script in such a way that the flow for the first RENO is started before the other then we can see that the first Reno's throughput will be higher that that of the second Reno since the droprate would comparatively be low.
+-NewReno/Reno- If I alter the script in such a way that the flow for the first NewReno is started before the other then we can exoect NewReno to have a better throughput than that of Reno
+-Vegas/Vegas- If i alter the script in such a way that teh flow for the first Vegas starts before the other then we can expect some amouth of fairness between the two variants.
+-NewReno/Vegas- If I alter the script in such a way that the flow for the first NewReno is started before the other then we can expect the NewReno to have a better throughput since the Vegas performs poorly for higher bandwidths the reason being that Vegas changes its transmission rate when it experiences any packet drops.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+EXPERIMENT 3:
+-------------
+
+The objective of the third experiment is to determine the Influence of Queuing between the different variants.
+
+In order to do that I will first use the NS-2 simulator and create the topology.
+
+Where:
+-The TCP flow is from N1 to sink at N4
+-The UDP/CBR flow is from N5 to sink at N6
+
+Note:
+
+The TCP flow is started first and then when it gains steadiness we start the CBR flow.
+Variations need to made in the time for this experiment.
+
+Queuing Algorithms used:
+- Droptail- Where the packets that arrive at a queue that is already filled, are dropped untill there's enough space in the queue to accomodate them.
+- RED- The RED algorithm is fairer that DropTail in the sense that it detects when the queue is gonna become empty. Its a pre-emptive algorithm. 
+
+Methodology:
+
+The changes that need to be made inorder to get the influence of queuing is by changing the algorithm that is mentioned in the NS-2 script first to DropTail and then to RED. I will be varying the time taken for the variants in each of these algorithms as my parameter. Starting from 10seconds to a minute.
+
+After the .tcl script is run we can see a .tr file. That file contains all the packet details. Such as the sent time, the
+recieve time, source, destination etc.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TESTING:
+
+For the purpose of testing I have mentioned above in each of the experiment description the parameters that I would be varing. 
+The main parameters that I would be varying are the time, the bandwidth of the TCP links, The bandwidth of the bottleneck links and the start times of the various TCP variants.
+
+For comparing the values that have been obtained from the different test cases and coming to a co c,usion for the experiment I will calculate the mean and the standard deviation of the values.
+
