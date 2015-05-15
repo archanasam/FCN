@@ -1,0 +1,5 @@
+#! /bin/sh
+
+
+# Execute the HTTP server python code
+`/usr/bin/python httpserver.py $1 $2 $3 $4 > /dev/null`

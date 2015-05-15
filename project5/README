@@ -1,0 +1,87 @@
+Roll Your Own CDN
+==================
+
+The motive behind this project was the creation of blocks of the CDN.
+
+A large number of servers are placed all over the world and we need systems that maps the client to the nearest server with the 
+help of systems that does these mappings.
+
+So I had to develop two servers in this project.
+
+1. httpserver
+2. dnsserver
+
+HIGH-LEVEL APPROACH:
+---------------------
+
+1. httpserver:
+
+- My first step was the development of the httpserver.
+- The main aim of the http server was the composition and the sending of the GET request. So in my program I have 
+created the GET request and sent it.
+- The other main function of the http server is caching. If a particular client has requested for a webpage, that request is cached in the cache.
+So if the same URL is requested again its got from the cache, if not then its got from the origin.
+- Now the problem lies in the limit of the cache as well. I have handled that as well. Now if I have a URl to cache and there is no place in the cache
+then the URL with the least readcount is removed from the cache and the contents of current URL is placed there. So that way the cache never crosses its limit.
+- I have also written a function that limits the cache size to 10MB as well.
+
+This is the high-level approach that I undertook in order to write the httpserver program.
+
+2. dnsserver:
+
+- My next step was the development of the dnsserver.
+- The DNS server that I have written mainly does two operations. 
+- The first one was to listen on a port and handle client requests
+- The second is to determine the closest server and return its IP to the client.
+- These are the two functions that my dns server has achieved.
+- I have also included multithreading into the program so that it can handle multiple requests.
+
+This is the high-level approach that I undertook in order to write the dnsserver program.
+
+Apart from these I have three scripts that I have written in order to deploy,start and stop the CDN
+
+1. deployCDN: This script deploys(copies) the dnsserver and the httpserver onto the the ec2 servers that are placed in different locations.
+2. runCDN: This script runs the http server on the ec2 machines and  dns server on a dedicated server for the project
+3. stopCDN: This script stops the entire simulation that is running at the ec2 machines and the dedicated server.
+
+I have used the passwordless login while connecting from the server to the ec2 machines so that each time an scp or an ssh happens there is no
+need to give passwords.
+
+ISSUES FACED:
+--------------
+
+The issues I faced are as follows:
+
+1. I started developing the dnsserver first, so one of the main issues I faced was getting the response header right for the DNS packet.
+It took me a while to get the header packing right, since it was confusing to refer to the captured packet on wireshark and then 
+simulate it in the program.
+
+2. After getting that right I moved to the httpserver. The issue I faced these was the logic for the cache. It took me a while to 
+get the logic for the caching limit exceeding and the action there after.
+
+3. Another major issue I faced was the passwordless login to the replica hosts. There was an issue with that.
+
+Since I have used caching of the URL and fetching it from the cache if the URL is requested again I am getting good performance numbers.
+
+COMMANDS TO EXECUTE:
+--------------------
+
+1. run the make file as:
+
+    make all
+
+2. The CDN commands are as follows:
+
+To Deploy:
+
+    ./deployCDN -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
+
+To Run:
+
+    ./runCDN -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
+
+To Stop:
+
+    ./stopCDN -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
+
+

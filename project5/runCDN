@@ -1,0 +1,41 @@
+#! /bin/sh
+
+port=$2
+origin=$4
+name=$6
+username=$8
+keyfile=${10}
+
+
+# Run HTTP servers
+
+# N. Virginia
+ssh '-i' $keyfile $username@ec2-52-0-73-113.compute-1.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Ireland
+ssh '-i' $keyfile $username@ec2-52-16-219-28.eu-west-1.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Oregon
+ssh '-i' $keyfile $username@ec2-52-11-8-29.us-west-2.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# N. California
+ssh '-i' $keyfile $username@ec2-52-8-12-101.us-west-1.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Frankfurt
+ssh '-i' $keyfile $username@ec2-52-28-48-84.eu-central-1.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Tokyo
+ssh '-i' $keyfile $username@ec2-52-68-12-77.ap-northeast-1.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Singapore
+ssh '-i' $keyfile $username@ec2-52-74-143-5.ap-southeast-1.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Sydney
+ssh '-i' $keyfile $username@ec2-52-64-63-125.ap-southeast-2.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Sao Paulo
+ssh '-i' $keyfile $username@ec2-54-94-214-108.sa-east-1.compute.amazonaws.com 'cd ~; nohup /bin/sh ./httpserver -p ' $port ' -o ' $origin ' > /dev/null 2>&1 &'
+
+# Run DNS server
+ssh '-i' $keyfile $username@cs5700cdnproject.ccs.neu.edu 'cd ~ ; nohup /bin/sh ./dnsserver -p '$port' -n '$name ' > /dev/null 2>&1 &'
+

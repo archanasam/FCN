@@ -1,0 +1,60 @@
+#! /bin/sh
+
+port=$2
+origin=$4
+name=$6
+username=$8
+keyfile=${10}
+
+
+# Copying to servers
+
+# N. Virginia
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-0-73-113.compute-1.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-0-73-113.compute-1.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Ireland
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-16-219-28.eu-west-1.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-16-219-28.eu-west-1.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Oregon
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-11-8-29.us-west-2.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-11-8-29.us-west-2.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# N. California
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-8-12-101.us-west-1.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-8-12-101.us-west-1.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Frankfurt
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-28-48-84.eu-central-1.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-28-48-84.eu-central-1.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Tokyo
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-68-12-77.ap-northeast-1.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-68-12-77.ap-northeast-1.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Singapore
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-74-143-5.ap-southeast-1.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-74-143-5.ap-southeast-1.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Sydney
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-52-64-63-125.ap-southeast-2.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-52-64-63-125.ap-southeast-2.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Sao Paulo
+`scp -i $keyfile httpserver httpserver.py stopserver.py $username@ec2-54-94-214-108.sa-east-1.compute.amazonaws.com:~ < /dev/null`
+`ssh -i $keyfile $username@ec2-54-94-214-108.sa-east-1.compute.amazonaws.com 'cd ~ ; chmod -R 777 *' < /dev/null`
+
+
+# Copy the DNS server code to the appropriate server
+`scp -i $keyfile dnsserver dnsserver.py stopserver.py $username@cs5700cdnproject.ccs.neu.edu:~ < /dev/null`
+`ssh -i $keyfile $username@cs5700cdnproject.ccs.neu.edu 'cd ~ ; chmod -R 777 dnsserver.py dnsserver stopserver.py' < /dev/null` 
+

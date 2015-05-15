@@ -1,0 +1,5 @@
+#! /bin/sh
+
+# Execute DNS server python code
+
+`/usr/bin/python dnsserver.py $1 $2 $3 $4 > /dev/null`
